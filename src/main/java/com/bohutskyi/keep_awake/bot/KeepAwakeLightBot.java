@@ -20,7 +20,7 @@ public class KeepAwakeLightBot {
 
         JButton startButton = new JButton("Start");
         JButton stopButton = new JButton("Stop");
-        JCheckBox moveMouseCheckBox = new JCheckBox("Move Mouse");
+        JCheckBox moveMouseCheckBox = new JCheckBox("Move Mouse", true);
         JLabel statusLabel = new JLabel("Status: Stopped");
 
         // Add components to frame
@@ -41,16 +41,23 @@ public class KeepAwakeLightBot {
                 statusLabel.setText("Status: Running");
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
-                
+
                 new Thread(() -> {
                     try {
                         robot = new Robot();
                         while (keepAwake) {
                             if (moveMouse) {
-                                // Move mouse in the same position (x: 100, y: 100)
-                                robot.mouseMove(100, 100);
+                                // Get the current mouse position
+                                Point currentMousePosition = MouseInfo.getPointerInfo().getLocation();
+                                int x = (int) currentMousePosition.getX();
+                                int y = (int) currentMousePosition.getY();
+
+                                // Move the mouse by 1 pixel and back to its original position immediately
+                                robot.mouseMove(x + 1, y); // Move by 1 pixel
+                                Thread.sleep(10); // Short delay (10 milliseconds)
+                                robot.mouseMove(x, y); // Move back to original position
                             }
-                            // Simulate a small delay
+                            // Simulate a small delay between movements
                             Thread.sleep(5000); // 5 seconds interval
                         }
                     } catch (Exception ex) {
